@@ -15,6 +15,7 @@ predict interaction probabilities for new sequence pairs.
 - `pandas`
 - `scikit-learn`
 - `joblib`
+- `torch` (for the optional deep learning model)
 
 Install the dependencies via:
 
@@ -29,6 +30,9 @@ Prepare a CSV file containing the columns `tcr_sequence`, `pmhc_sequence` and
 
 ```bash
 python train.py train_data.csv model.joblib
+
+# use `--method deep` to train the neural model
+# python train.py train_data.csv deep_model.pt --method deep
 ```
 
 ## Prediction
@@ -38,6 +42,9 @@ probabilities:
 
 ```bash
 python predict.py pairs.csv model.joblib predictions.csv
+
+# for the neural model use:
+# python predict.py pairs.csv deep_model.pt predictions.csv --method deep
 ```
 
 The output file will contain the original columns plus a `prediction` column

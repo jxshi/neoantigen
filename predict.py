@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
-from pmhctcr_predictor.model import predict
+from pmhctcr_predictor import model as logreg_model
+from pmhctcr_predictor import deep_model
 
 
 def main():
@@ -8,8 +9,12 @@ def main():
     parser.add_argument("input_csv", help="CSV file with tcr_sequence and pmhc_sequence")
     parser.add_argument("model_path", help="Trained model path")
     parser.add_argument("output_csv", help="Destination for predictions")
+    parser.add_argument("--method", choices=["logreg", "deep"], default="logreg", help="Model type")
     args = parser.parse_args()
-    predict(args.input_csv, args.model_path, args.output_csv)
+    if args.method == "logreg":
+        logreg_model.predict(args.input_csv, args.model_path, args.output_csv)
+    else:
+        deep_model.predict(args.input_csv, args.model_path, args.output_csv)
 
 
 if __name__ == "__main__":
