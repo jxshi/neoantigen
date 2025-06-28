@@ -49,3 +49,11 @@ python predict.py pairs.csv model.joblib predictions.csv
 
 The output file will contain the original columns plus a `prediction` column
 with the predicted probability of interaction.
+
+## Running Tests
+
+Install the development dependencies and run the test suite with `pytest`:
+
+```bash
+pytest
+```
