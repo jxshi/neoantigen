@@ -11,10 +11,10 @@ predict interaction probabilities for new sequence pairs.
 ## Requirements
 
 - Python 3.8+
-- `numpy`
-- `pandas`
-- `scikit-learn`
-- `joblib`
+- `numpy>=1.24`
+- `pandas>=1.5`
+- `scikit-learn>=1.2`
+- `joblib>=1.2`
 
 Install the dependencies via:
 
@@ -42,3 +42,12 @@ python predict.py pairs.csv model.joblib predictions.csv
 
 The output file will contain the original columns plus a `prediction` column
 with the predicted probability of interaction.
+
+## Running Tests
+
+Before executing the test suite make sure the dependencies are installed:
+
+```bash
+pip install -r requirements.txt
+pytest
+```
