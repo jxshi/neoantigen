@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 from pmhctcr_predictor import model as logreg_model
-from pmhctcr_predictor import deep_model
 
 
 def main():
@@ -14,6 +13,7 @@ def main():
     if args.method == "logreg":
         logreg_model.predict(args.input_csv, args.model_path, args.output_csv)
     else:
+        from pmhctcr_predictor import deep_model
         deep_model.predict(args.input_csv, args.model_path, args.output_csv)
 
 

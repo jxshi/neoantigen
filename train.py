@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 from pmhctcr_predictor import model as logreg_model
-from pmhctcr_predictor import deep_model
 
 
 def main():
@@ -14,6 +13,7 @@ def main():
     if args.method == "logreg":
         logreg_model.train_model(args.train_csv, args.model_path, args.k)
     else:
+        from pmhctcr_predictor import deep_model
         deep_model.train_model(args.train_csv, args.model_path)
 
 
