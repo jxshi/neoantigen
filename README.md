@@ -31,6 +31,15 @@ Prepare a CSV file containing the columns `tcr_sequence`, `pmhc_sequence` and
 python train.py train_data.csv model.joblib
 ```
 
+Extra options expose key `LogisticRegression` parameters, for example:
+
+```bash
+python train.py train_data.csv model.joblib --k 3 --C 0.5 \
+    --penalty l1 --solver liblinear --metric auc
+```
+
+The script prints the chosen training metric (accuracy by default).
+
 ## Prediction
 
 Given a CSV with `tcr_sequence` and `pmhc_sequence`, predict interaction
