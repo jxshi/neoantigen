@@ -17,14 +17,35 @@ def build_feature_matrix(df, k=2):
     return np.array(data)
 
 
-def train_model(train_csv, model_path, k=2):
-    """Train a logistic regression model and save it to disk."""
+def train_model(train_csv, model_path, k=2, metric="accuracy"):
+    """Train a logistic regression model and save it to disk.
+
+    Parameters
+    ----------
+    train_csv : str
+        Path to the training CSV file.
+    model_path : str
+        Where to save the trained model.
+    k : int, optional
+        k-mer size used for feature extraction.
+    metric : str, optional
+        Name of the evaluation metric. Only ``"accuracy"`` is supported.
+
+    Raises
+    ------
+    ValueError
+        If ``metric`` is not a supported metric name.
+    """
+
+    if metric != "accuracy":
+        raise ValueError(f"Unsupported metric: {metric}")
+
     df = pd.read_csv(train_csv)
     X = build_feature_matrix(df, k)
-    y = df['label']
+    y = df["label"]
     clf = LogisticRegression(max_iter=1000)
     clf.fit(X, y)
-    dump({'model': clf, 'k': k}, model_path)
+    dump({"model": clf, "k": k}, model_path)
 
 
 def predict(predict_csv, model_path, output_csv):
