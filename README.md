@@ -21,6 +21,7 @@ Install the dependencies via:
 
 ```bash
 pip install -r requirements.txt
+pip install torch  # required only for --method deep
 ```
 
 ## Training
