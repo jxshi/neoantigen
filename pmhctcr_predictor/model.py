@@ -20,6 +20,12 @@ def build_feature_matrix(df, k=2):
 def train_model(train_csv, model_path, k=2):
     """Train a logistic regression model and save it to disk."""
     df = pd.read_csv(train_csv)
+    required = {"tcr_sequence", "pmhc_sequence", "label"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Input CSV missing columns: {', '.join(sorted(missing))}"
+        )
     X = build_feature_matrix(df, k)
     y = df['label']
     clf = LogisticRegression(max_iter=1000)
@@ -30,6 +36,12 @@ def train_model(train_csv, model_path, k=2):
 def predict(predict_csv, model_path, output_csv):
     """Predict interaction probabilities for new pairs."""
     df = pd.read_csv(predict_csv)
+    required = {"tcr_sequence", "pmhc_sequence"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Input CSV missing columns: {', '.join(sorted(missing))}"
+        )
     params = load(model_path)
     clf = params['model']
     k = params['k']
