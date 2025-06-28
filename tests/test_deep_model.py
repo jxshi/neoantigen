@@ -1,5 +1,6 @@
 import pandas as pd
-import torch
+import pytest
+torch = pytest.importorskip("torch")
 
 from pmhctcr_predictor.deep_model import (
     seq_to_tensor,
