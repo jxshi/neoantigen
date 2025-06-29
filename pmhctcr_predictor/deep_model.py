@@ -6,12 +6,19 @@ import torch.nn as nn
 
 from .features import AA_ALPHABET
 
+# Index used for sequence padding
+PAD_IDX = len(AA_ALPHABET)
+
 
 _MAPPING = {aa: idx for idx, aa in enumerate(AA_ALPHABET)}
 
 def seq_to_tensor(seq: str) -> torch.Tensor:
-    """Convert an amino-acid sequence to a tensor of indices."""
-    indices = [_MAPPING[s] for s in seq if s in _MAPPING]
+    """Convert an amino-acid sequence to a tensor of indices.
+
+    Characters not found in the alphabet are mapped to the padding index so that
+    they do not influence downstream embeddings.
+    """
+    indices = [_MAPPING.get(s, PAD_IDX) for s in seq]
     return torch.tensor(indices, dtype=torch.long)
 
 
@@ -51,8 +58,8 @@ def collate_batch(batch):
     pmhc_tensors = [seq_to_tensor(s) for s in pmhc_seqs]
     tcr_lengths = torch.tensor([len(t) for t in tcr_tensors])
     pmhc_lengths = torch.tensor([len(t) for t in pmhc_tensors])
-    tcr_pad = pad_sequence(tcr_tensors, batch_first=True)
-    pmhc_pad = pad_sequence(pmhc_tensors, batch_first=True)
+    tcr_pad = pad_sequence(tcr_tensors, batch_first=True, padding_value=PAD_IDX)
+    pmhc_pad = pad_sequence(pmhc_tensors, batch_first=True, padding_value=PAD_IDX)
 
     if labeled:
         return tcr_pad, tcr_lengths, pmhc_pad, pmhc_lengths, labels
@@ -64,14 +71,21 @@ class SequencePairClassifier(nn.Module):
 
     def __init__(self, alphabet: str = AA_ALPHABET, embed_dim: int = 16, hidden_dim: int = 32):
         super().__init__()
-        self.embed = nn.Embedding(len(alphabet), embed_dim)
+        self.pad_idx = len(alphabet)
+        self.embed = nn.Embedding(len(alphabet) + 1, embed_dim, padding_idx=self.pad_idx)
         self.fc1 = nn.Linear(embed_dim * 2, hidden_dim)
         self.act = nn.ReLU()
         self.fc2 = nn.Linear(hidden_dim, 1)
 
     def forward(self, tcr, tcr_len, pmhc, pmhc_len):
-        tcr_emb = self.embed(tcr).sum(dim=1) / tcr_len.unsqueeze(1)
-        pmhc_emb = self.embed(pmhc).sum(dim=1) / pmhc_len.unsqueeze(1)
+        tcr_mask = (tcr != self.pad_idx)
+        pmhc_mask = (pmhc != self.pad_idx)
+
+        tcr_embedded = self.embed(tcr) * tcr_mask.unsqueeze(-1)
+        pmhc_embedded = self.embed(pmhc) * pmhc_mask.unsqueeze(-1)
+
+        tcr_emb = tcr_embedded.sum(dim=1) / tcr_mask.sum(dim=1, keepdim=True)
+        pmhc_emb = pmhc_embedded.sum(dim=1) / pmhc_mask.sum(dim=1, keepdim=True)
         x = torch.cat([tcr_emb, pmhc_emb], dim=1)
         x = self.act(self.fc1(x))
         x = self.fc2(x)
