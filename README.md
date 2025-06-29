@@ -17,6 +17,16 @@ predict interaction probabilities for new sequence pairs.
 - `joblib`
 - `torch` (for the optional deep learning model)
 
+You can create a conda environment with all required packages using
+`environment.yml`:
+
+```bash
+conda env create -f environment.yml
+conda activate neoantigen
+```
+
+This installs PyTorch and the other dependencies listed above.
+
 Install the dependencies via:
 
 ```bash
