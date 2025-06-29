@@ -24,6 +24,10 @@ pip install -r requirements.txt
 pip install torch  # required only for --method deep
 ```
 
+Installing PyTorch may require selecting the appropriate version for your
+platform. Refer to the [PyTorch installation guide](https://pytorch.org/) if you
+encounter issues.
+
 ## Training
 
 Prepare a CSV file containing the columns `tcr_sequence`, `pmhc_sequence` and
