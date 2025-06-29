@@ -33,7 +33,11 @@ python train.py train_data.csv model.joblib
 
 # use `--method deep` to train the neural model
 # python train.py train_data.csv deep_model.pt --method deep
+# optional parameters for the deep model
+# python train.py train_data.csv deep_model.pt --method deep --epochs 10 --batch-size 16 --lr 0.0005
 ```
+
+`--epochs`, `--batch-size`, and `--lr` control the number of training epochs, mini-batch size and learning rate when using the deep learning model.
 
 ## Prediction
 
