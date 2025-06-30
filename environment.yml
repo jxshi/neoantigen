@@ -10,4 +10,7 @@ dependencies:
   - joblib
   - pytest>=8
   - pytorch
+  - pip
+  - pip:
+      - fair-esm
 

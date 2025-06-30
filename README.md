@@ -32,6 +32,7 @@ Install the dependencies via:
 ```bash
 pip install -r requirements.txt
 pip install torch  # required only for --method deep
+pip install fair-esm  # required only for --method esm
 ```
 
 Installing PyTorch may require selecting the appropriate version for your
@@ -48,6 +49,8 @@ python train.py train_data.csv model.joblib
 
 # use `--method deep` to train the neural model
 # python train.py train_data.csv deep_model.pt --method deep
+# use `--method esm` to train with ESM embeddings
+# python train.py train_data.csv esm_model.joblib --method esm
 ```
 
 ## Prediction
@@ -60,6 +63,8 @@ python predict.py pairs.csv model.joblib predictions.csv
 
 # for the neural model use:
 # python predict.py pairs.csv deep_model.pt predictions.csv --method deep
+# for the ESM model use:
+# python predict.py pairs.csv esm_model.joblib predictions.csv --method esm
 ```
 
 The output file will contain the original columns plus a `prediction` column
