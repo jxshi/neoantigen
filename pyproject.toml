@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pmhctcr_predictor"
+version = "0.0.0"
+description = "Neoantigen pMHC-TCR interaction predictor"
+authors = [{name="Jianxiang Shi"}]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = ["numpy", "pandas", "scikit-learn", "joblib"]
+
+[project.optional-dependencies]
+deep = ["torch"]
+esm = ["fair-esm"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
