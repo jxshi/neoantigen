@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from joblib import dump, load
 
+from .esm_features import ESMEmbedder
+
 from .features import all_kmers, kmer_vector
 
 
@@ -33,6 +35,25 @@ def train_model(train_csv, model_path, k=2):
     dump({'model': clf, 'k': k}, model_path)
 
 
+def train_model_esm(train_csv, model_path, model_name="esm2_t6_8M_UR50D"):
+    """Train logistic regression using ESM embeddings."""
+    df = pd.read_csv(train_csv)
+    required = {"tcr_sequence", "pmhc_sequence", "label"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"Input CSV missing columns: {', '.join(sorted(missing))}")
+    embedder = ESMEmbedder(model_name)
+    data = [
+        embedder.pair_embedding(row["tcr_sequence"], row["pmhc_sequence"])
+        for _, row in df.iterrows()
+    ]
+    X = np.stack(data)
+    y = df["label"]
+    clf = LogisticRegression(max_iter=1000)
+    clf.fit(X, y)
+    dump({"model": clf, "model_name": model_name}, model_path)
+
+
 def predict(predict_csv, model_path, output_csv):
     """Predict interaction probabilities for new pairs."""
     df = pd.read_csv(predict_csv)
@@ -48,4 +69,26 @@ def predict(predict_csv, model_path, output_csv):
     X = build_feature_matrix(df, k)
     probs = clf.predict_proba(X)[:, 1]
     df['prediction'] = probs
+    df.to_csv(output_csv, index=False)
+
+
+def predict_esm(predict_csv, model_path, output_csv):
+    """Predict using an ESM-based logistic regression model."""
+    df = pd.read_csv(predict_csv)
+    required = {"tcr_sequence", "pmhc_sequence"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(f"Input CSV missing columns: {', '.join(sorted(missing))}")
+
+    params = load(model_path)
+    clf = params["model"]
+    model_name = params["model_name"]
+    embedder = ESMEmbedder(model_name)
+    data = [
+        embedder.pair_embedding(row["tcr_sequence"], row["pmhc_sequence"])
+        for _, row in df.iterrows()
+    ]
+    X = np.stack(data)
+    probs = clf.predict_proba(X)[:, 1]
+    df["prediction"] = probs
     df.to_csv(output_csv, index=False)
