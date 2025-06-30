@@ -1,87 +1,135 @@
 # Neoantigen Predictor
 
-This repository provides a minimal Python implementation for training and
-predicting peptide–MHC (pMHC) and T-cell receptor (TCR) interactions.
-
-The package `pmhctcr_predictor` contains utilities to extract simple k‑mer
-features from amino‑acid sequences and train a logistic regression model.
-The provided scripts demonstrate how to train a model from a CSV file and
-predict interaction probabilities for new sequence pairs.
+This repository contains utilities for predicting interaction probabilities between peptide--MHC (pMHC) sequences and T--cell receptor (TCR) sequences. The main package `pmhctcr_predictor` implements simple k‑mer features, an optional neural model, and logistic regression on pretrained ESM embeddings. Command line scripts are provided for training models and running predictions.
 
 ## Requirements
 
-- Python 3.8+
+- Python **3.8** or later
 - `numpy`
 - `pandas`
 - `scikit-learn`
 - `joblib`
-- `torch` (for the optional deep learning model)
+- `pytest` (for running the tests)
+- `torch` (required only for the deep model)
+- `fair-esm` (required only for the ESM model)
 
-You can create a conda environment with all required packages using
-`environment.yml`:
+All dependencies are listed in `requirements.txt` and `environment.yml`.
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/<your-user>/neoantigen.git
+cd neoantigen
+```
+
+### 2. Using Conda (recommended)
+
+Create a new environment with all required packages, including PyTorch:
 
 ```bash
 conda env create -f environment.yml
 conda activate neoantigen
 ```
 
-This installs PyTorch and the other dependencies listed above. If you
-have custom channels defined in your `.condarc` configuration, they may
-override the channels specified in the file. In that case use the
-`--override-channels` option:
+If your `.condarc` file overrides channels, add `--override-channels` to the command.
+
+### 3. Using pip
+
+Alternatively, create a virtual environment and install the requirements:
 
 ```bash
-conda env create -f environment.yml --override-channels
-```
-
-Install the dependencies via:
-
-```bash
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
-pip install torch  # required only for --method deep
-pip install fair-esm  # required only for --method esm
 ```
 
-Installing PyTorch may require selecting the appropriate version for your
-platform. Refer to the [PyTorch installation guide](https://pytorch.org/) if you
-encounter issues.
+Install optional extras as needed:
+
+```bash
+pip install torch      # for --method deep
+pip install fair-esm   # for --method esm
+```
+
+### 4. Install package for development
+
+(Optional but recommended for testing.)
+
+```bash
+pip install -e .
+```
 
 ## Training
 
-Prepare a CSV file containing the columns `tcr_sequence`, `pmhc_sequence` and
-`label` (1 for interaction, 0 for no interaction). Then run:
+Prepare a CSV file with the columns `tcr_sequence`, `pmhc_sequence`, and `label` (1 for interacting, 0 for non‑interacting). An example file is available at `tests/data/sample_train.csv`.
+
+Train a logistic regression model using k‑mer features:
 
 ```bash
-python train.py train_data.csv model.joblib
+python train.py <train.csv> <model.joblib>
+```
 
-# use `--method deep` to train the neural model
-# python train.py train_data.csv deep_model.pt --method deep
-# use `--method esm` to train with ESM embeddings
-# python train.py train_data.csv esm_model.joblib --method esm
+Set the k‑mer size (default is 2):
+
+```bash
+python train.py <train.csv> <model.joblib> --k 3
+```
+
+Use the neural model:
+
+```bash
+python train.py <train.csv> <model.pt> --method deep
+```
+
+Use logistic regression on ESM embeddings:
+
+```bash
+python train.py <train.csv> <esm_model.joblib> --method esm
 ```
 
 ## Prediction
 
-Given a CSV with `tcr_sequence` and `pmhc_sequence`, predict interaction
-probabilities:
+Create a CSV containing `tcr_sequence` and `pmhc_sequence` for each pair you wish to score. Run prediction with the model type that matches how the model was trained.
+
+For the logistic regression model:
 
 ```bash
-python predict.py pairs.csv model.joblib predictions.csv
-
-# for the neural model use:
-# python predict.py pairs.csv deep_model.pt predictions.csv --method deep
-# for the ESM model use:
-# python predict.py pairs.csv esm_model.joblib predictions.csv --method esm
+python predict.py <pairs.csv> <model.joblib> <predictions.csv>
 ```
 
-The output file will contain the original columns plus a `prediction` column
-with the predicted probability of interaction.
+For the neural model:
+
+```bash
+python predict.py <pairs.csv> <model.pt> <predictions.csv> --method deep
+```
+
+For the ESM model:
+
+```bash
+python predict.py <pairs.csv> <esm_model.joblib> <predictions.csv> --method esm
+```
+
+The output CSV will contain the input columns plus a `prediction` column holding the probability that each TCR binds the pMHC.
+
+## Interpreting Results
+
+The `prediction` column in the output file is a probability between 0 and 1.
+Values close to **1** indicate a high likelihood that the TCR and pMHC interact,
+while values near **0** suggest little to no interaction. Thresholds for calling
+an interaction depend on the use case, but a common approach is to treat values
+above 0.5 as positive and those below 0.5 as negative. You can sort the output
+by the `prediction` column to identify the most promising pairs for further
+analysis.
 
 ## Running Tests
 
-Install the development dependencies, install the package locally, and run the test suite with `pytest`:
+After installing the package in editable mode, run the full test suite:
 
 ```bash
-pip install -e .
 pytest
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
