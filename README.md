@@ -79,8 +79,9 @@ with the predicted probability of interaction.
 
 ## Running Tests
 
-Install the development dependencies and run the test suite with `pytest`:
+Install the development dependencies, install the package locally, and run the test suite with `pytest`:
 
 ```bash
+pip install -e .
 pytest
 ```
