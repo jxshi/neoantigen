@@ -29,8 +29,8 @@ class ESMEmbedder:
             raise ImportError("torch is required for ESM features")
         _, _, tokens = self.batch_converter([("seq", seq)])
         with torch.no_grad():
-            out = self.model(tokens, repr_layers=[-1], return_contacts=False)
-        rep = out["representations"][-1].squeeze(0)
+            out = self.model(tokens, repr_layers=[self.model.num_layers], return_contacts=False)
+        rep = out["representations"][self.model.num_layers].squeeze(0)
         return rep.mean(dim=0).cpu().numpy()
 
     def pair_embedding(self, seq1: str, seq2: str) -> np.ndarray:
