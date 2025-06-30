@@ -25,7 +25,14 @@ conda env create -f environment.yml
 conda activate neoantigen
 ```
 
-This installs PyTorch and the other dependencies listed above.
+This installs PyTorch and the other dependencies listed above. If you
+have custom channels defined in your `.condarc` configuration, they may
+override the channels specified in the file. In that case use the
+`--override-channels` option:
+
+```bash
+conda env create -f environment.yml --override-channels
+```
 
 Install the dependencies via:
 
