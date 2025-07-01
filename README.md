@@ -70,6 +70,18 @@ Train a logistic regression model using k‑mer features:
 python train.py <train.csv> <model.joblib>
 ```
 
+Train a support vector machine model:
+
+```bash
+python train.py <train.csv> <svm_model.joblib> --method svm
+```
+
+Train a random forest model:
+
+```bash
+python train.py <train.csv> <rf_model.joblib> --method rf
+```
+
 Set the k‑mer size (default is 2):
 
 ```bash
@@ -96,6 +108,18 @@ For the logistic regression model:
 
 ```bash
 python predict.py <pairs.csv> <model.joblib> <predictions.csv>
+```
+
+For the SVM model:
+
+```bash
+python predict.py <pairs.csv> <svm_model.joblib> <predictions.csv> --method svm
+```
+
+For the random forest model:
+
+```bash
+python predict.py <pairs.csv> <rf_model.joblib> <predictions.csv> --method rf
 ```
 
 For the neural model:

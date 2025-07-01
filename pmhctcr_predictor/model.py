@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 from joblib import dump, load
 
 from .esm_features import ESMEmbedder
@@ -33,6 +35,38 @@ def train_model(train_csv, model_path, k=2):
     clf = LogisticRegression(max_iter=1000)
     clf.fit(X, y)
     dump({'model': clf, 'k': k}, model_path)
+
+
+def train_model_svm(train_csv, model_path, k=2):
+    """Train an SVM model and save it to disk."""
+    df = pd.read_csv(train_csv)
+    required = {"tcr_sequence", "pmhc_sequence", "label"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Input CSV missing columns: {', '.join(sorted(missing))}"
+        )
+    X = build_feature_matrix(df, k)
+    y = df["label"]
+    clf = SVC(probability=True)
+    clf.fit(X, y)
+    dump({"model": clf, "k": k}, model_path)
+
+
+def train_model_rf(train_csv, model_path, k=2, n_estimators=100):
+    """Train a random forest model and save it to disk."""
+    df = pd.read_csv(train_csv)
+    required = {"tcr_sequence", "pmhc_sequence", "label"}
+    missing = required - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Input CSV missing columns: {', '.join(sorted(missing))}"
+        )
+    X = build_feature_matrix(df, k)
+    y = df["label"]
+    clf = RandomForestClassifier(n_estimators=n_estimators)
+    clf.fit(X, y)
+    dump({"model": clf, "k": k}, model_path)
 
 
 def train_model_esm(train_csv, model_path, model_name="esm2_t6_8M_UR50D"):
