@@ -10,12 +10,12 @@ def main():
     parser.add_argument("output_csv", help="Destination for predictions")
     parser.add_argument(
         "--method",
-        choices=["logreg", "deep", "esm"],
+        choices=["logreg", "svm", "rf", "deep", "esm"],
         default="logreg",
         help="Model type",
     )
     args = parser.parse_args()
-    if args.method == "logreg":
+    if args.method in {"logreg", "svm", "rf"}:
         logreg_model.predict(args.input_csv, args.model_path, args.output_csv)
     elif args.method == "esm":
         logreg_model.predict_esm(args.input_csv, args.model_path, args.output_csv)
