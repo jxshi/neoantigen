@@ -9,8 +9,8 @@ dependencies:
   - scikit-learn
   - joblib
   - pytest>=8
-  - pytorch
+  - pytorch        # required for deep and esm models
   - pip
   - pip:
-      - fair-esm
+      - fair-esm   # required for esm model
 

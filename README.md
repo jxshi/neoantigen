@@ -10,7 +10,7 @@ This repository contains utilities for predicting interaction probabilities betw
 - `scikit-learn`
 - `joblib`
 - `pytest` (for running the tests)
-- `torch` (required only for the deep model)
+- `torch` (required for the deep and ESM models)
 - `fair-esm` (required only for the ESM model)
 
 All dependencies are listed in `requirements.txt` and `environment.yml`.
@@ -45,11 +45,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Install optional extras as needed:
+Install optional extras as needed. PyTorch is required for both the deep model
+and the ESM-based model, while the `fair-esm` package provides pretrained
+embeddings used by the ESM method.
 
 ```bash
-pip install torch      # for --method deep
-pip install fair-esm   # for --method esm
+pip install torch      # required for --method deep or esm
+pip install fair-esm   # required for --method esm
+```
+
+You can also install extras directly from this repository:
+
+```bash
+pip install -e .[deep]
+pip install -e .[esm]
 ```
 
 ### 4. Install package for development

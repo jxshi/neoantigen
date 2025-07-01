@@ -3,5 +3,5 @@ pandas
 scikit-learn
 joblib
 pytest>=8
-torch
+torch     # optional, required for --method deep or esm
 fair-esm  # optional, required for --method esm

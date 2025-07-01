@@ -1,3 +1,10 @@
+"""Minimal neural model for pMHC/TCR sequence pairs.
+
+This module depends on the ``torch`` package, which is not installed with the
+base requirements. Install the optional ``deep`` extra or manually install
+PyTorch if you want to train or run the deep learning model.
+"""
+
 import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader

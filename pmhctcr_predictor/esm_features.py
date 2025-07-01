@@ -1,3 +1,10 @@
+"""Utilities for embedding sequences using pretrained ESM models.
+
+The functions in this module require both ``torch`` and ``fair-esm`` to be
+installed. These heavy dependencies are optional and only needed when running
+the ESM-based model.
+"""
+
 import numpy as np
 
 try:
