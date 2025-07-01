@@ -12,6 +12,8 @@ from .features import all_kmers, kmer_vector
 
 def build_feature_matrix(df, k=2):
     """Create a feature matrix for a dataframe of sequences."""
+    if not isinstance(k, int) or k <= 0:
+        raise ValueError("k must be a positive integer")
     kmers = all_kmers(k)
     data = []
     for _, row in df.iterrows():
