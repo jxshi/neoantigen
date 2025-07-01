@@ -12,6 +12,16 @@ def test_build_feature_matrix():
     assert X.shape[0] == 1
 
 
+def test_build_feature_matrix_invalid_k():
+    df = pd.DataFrame({
+        "tcr_sequence": ["ACD"],
+        "pmhc_sequence": ["EFG"],
+        "label": [1],
+    })
+    with pytest.raises(ValueError):
+        build_feature_matrix(df, k=0)
+
+
 def test_train_model_missing_columns(tmp_path):
     df = pd.DataFrame({"tcr_sequence": ["ACD"], "label": [1]})
     csv = tmp_path / "train.csv"
@@ -19,6 +29,19 @@ def test_train_model_missing_columns(tmp_path):
     model = tmp_path / "model.joblib"
     with pytest.raises(ValueError):
         train_model(csv, model, k=1)
+
+
+def test_train_model_invalid_k(tmp_path):
+    df = pd.DataFrame({
+        "tcr_sequence": ["ACD"],
+        "pmhc_sequence": ["EFG"],
+        "label": [1],
+    })
+    csv = tmp_path / "train.csv"
+    df.to_csv(csv, index=False)
+    model_path = tmp_path / "model.joblib"
+    with pytest.raises(ValueError):
+        train_model(csv, model_path, k=0)
 
 
 def test_predict_missing_columns(tmp_path):
